@@ -128,3 +128,13 @@ PROCOUNTOR_REDIRECT_URI = os.environ.get('PROCOUNTOR_REDIRECT_URI', '')
 PROCOUNTOR_API_KEY = os.environ.get('PROCOUNTOR_API_KEY', '')
 PROCOUNTOR_COMPANY_ID = os.environ.get('PROCOUNTOR_COMPANY_ID', '')
 PROCOUNTOR_BASE_URL = os.environ.get('PROCOUNTOR_BASE_URL', 'https://api.procountor.com')
+
+# Shopify API settings
+SHOPIFY_SHOP_NAME = os.environ.get('SHOPIFY_SHOP_NAME', '')
+SHOPIFY_ACCESS_TOKEN = os.environ.get('SHOPIFY_ACCESS_TOKEN', '')
+SHOPIFY_API_VERSION = os.environ.get('SHOPIFY_API_VERSION', '2024-01')
+
+# Etsy API settings
+ETSY_API_KEY = os.environ.get('ETSY_API_KEY', '')
+ETSY_ACCESS_TOKEN = os.environ.get('ETSY_ACCESS_TOKEN', '')
+ETSY_SHOP_ID = os.environ.get('ETSY_SHOP_ID', '')

@@ -6,6 +6,8 @@ class ERPSystem(models.TextChoices):
     NETVISOR = 'netvisor', 'Netvisor'
     FENNOA = 'fennoa', 'Fennoa'
     PROCOUNTOR = 'procountor', 'Procountor'
+    SHOPIFY = 'shopify', 'Shopify'
+    ETSY = 'etsy', 'Etsy'
 
 
 class InvoiceStatus(models.TextChoices):

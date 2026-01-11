@@ -1,10 +1,10 @@
 # VibeBankERP Sync
 
-A Django application for synchronizing receivables and payables from multiple accounting systems (Netvisor, Fennoa, and Procountor) into a unified database.
+A Django application for synchronizing receivables and payables from multiple accounting systems (Netvisor, Fennoa, and Procountor) and e-commerce platforms (Shopify and Etsy) into a unified database.
 
 ## Features
 
-- **Multi-system support**: Sync data from Netvisor, Fennoa, and Procountor
+- **Multi-system support**: Sync data from Netvisor, Fennoa, Procountor, Shopify, and Etsy
 - **Unified data model**: Generic database models that work across all accounting systems
 - **Receivables & Payables**: Sync both sales invoices (receivables) and purchase invoices (payables)
 - **Line items**: Full support for invoice line items with tax calculations
@@ -78,13 +78,29 @@ export PROCOUNTOR_CLIENT_ID="your_client_id"  # For OAuth
 export PROCOUNTOR_CLIENT_SECRET="your_client_secret"  # For OAuth
 ```
 
+### Shopify Configuration
+
+```bash
+export SHOPIFY_SHOP_NAME="your-shop-name"  # Without .myshopify.com
+export SHOPIFY_ACCESS_TOKEN="your_access_token"
+export SHOPIFY_API_VERSION="2024-01"  # API version to use
+```
+
+### Etsy Configuration
+
+```bash
+export ETSY_API_KEY="your_api_key"
+export ETSY_ACCESS_TOKEN="your_access_token"
+export ETSY_SHOP_ID="your_shop_id"
+```
+
 Alternatively, you can create a `.env` file in the project root and use a package like `python-decouple` or `django-environ` to load these values.
 
 ## Usage
 
 ### Sync Commands
 
-The application provides three management commands for syncing data:
+The application provides five management commands for syncing data:
 
 #### Sync from Netvisor
 
@@ -134,6 +150,37 @@ python manage.py sync-procountor --receivables-only
 python manage.py sync-procountor --payables-only
 ```
 
+#### Sync from Shopify
+
+```bash
+# Sync all orders (default: last 30 days)
+python manage.py sync-shopify
+
+# Sync with custom date range
+python manage.py sync-shopify --start-date 2024-01-01 --end-date 2024-12-31
+
+# Sync only specific order status
+python manage.py sync-shopify --status open
+python manage.py sync-shopify --status closed
+python manage.py sync-shopify --status cancelled
+```
+
+#### Sync from Etsy
+
+```bash
+# Sync all receipts (default: last 30 days)
+python manage.py sync-etsy
+
+# Sync with custom date range
+python manage.py sync-etsy --start-date 2024-01-01 --end-date 2024-12-31
+
+# Sync only paid orders
+python manage.py sync-etsy --paid-only
+
+# Sync only shipped orders
+python manage.py sync-etsy --shipped-only
+```
+
 ### Scheduling Syncs
 
 You can schedule these commands to run periodically using:
@@ -144,6 +191,8 @@ You can schedule these commands to run periodically using:
 0 2 * * * cd /path/to/vibebank-erp-sync && /path/to/venv/bin/python manage.py sync-netvisor
 0 2 * * * cd /path/to/vibebank-erp-sync && /path/to/venv/bin/python manage.py sync-fennoa
 0 2 * * * cd /path/to/vibebank-erp-sync && /path/to/venv/bin/python manage.py sync-procountor
+0 2 * * * cd /path/to/vibebank-erp-sync && /path/to/venv/bin/python manage.py sync-shopify
+0 2 * * * cd /path/to/vibebank-erp-sync && /path/to/venv/bin/python manage.py sync-etsy
 ```
 
 - **Django-cron** or **Celery** for more advanced scheduling
@@ -204,6 +253,21 @@ You can view:
 - Paginated responses (100 items per page)
 - 0-indexed pagination
 - Date format: YYYY-MM-DD
+
+### Shopify
+- REST Admin API with access token authentication
+- Paginated responses (max 250 items per page)
+- Cursor-based pagination with Link headers
+- Date format: ISO 8601 (YYYY-MM-DDTHH:MM:SSZ)
+- Orders are synced as receivables
+
+### Etsy
+- REST API v3 with OAuth 2.0
+- Paginated responses (max 100 items per page)
+- Offset-based pagination
+- Timestamps are Unix epoch seconds
+- Receipts (orders) are synced as receivables
+- Transactions within receipts become line items
 
 ## Development
 
