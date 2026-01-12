@@ -138,3 +138,33 @@ SHOPIFY_API_VERSION = os.environ.get('SHOPIFY_API_VERSION', '2024-01')
 ETSY_API_KEY = os.environ.get('ETSY_API_KEY', '')
 ETSY_ACCESS_TOKEN = os.environ.get('ETSY_ACCESS_TOKEN', '')
 ETSY_SHOP_ID = os.environ.get('ETSY_SHOP_ID', '')
+
+# WhatsApp Integration settings (Twilio)
+TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID', '')
+TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN', '')
+TWILIO_WHATSAPP_NUMBER = os.environ.get('TWILIO_WHATSAPP_NUMBER', '')  # Format: +14155238886
+
+# Anthropic API settings for LLM
+ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
+WHATSAPP_LLM_MODEL = os.environ.get('WHATSAPP_LLM_MODEL', 'claude-3-5-sonnet-20241022')
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'whatsapp.log'),
+        },
+    },
+    'loggers': {
+        'accounting_sync': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        },
+    },
+}

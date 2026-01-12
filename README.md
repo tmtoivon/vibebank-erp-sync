@@ -11,6 +11,8 @@ A Django application for synchronizing receivables and payables from multiple ac
 - **Customer & Vendor tracking**: Automatic syncing of customer and vendor information
 - **Audit logging**: Complete sync history with success/failure tracking
 - **Incremental sync**: Date-based filtering for efficient incremental updates
+- **WhatsApp Integration**: AI-powered WhatsApp bot for querying financial data via natural language
+- **LLM-powered queries**: Uses Claude to understand and respond to customer questions about invoices
 
 ## Installation
 
@@ -92,6 +94,19 @@ export SHOPIFY_API_VERSION="2024-01"  # API version to use
 export ETSY_API_KEY="your_api_key"
 export ETSY_ACCESS_TOKEN="your_access_token"
 export ETSY_SHOP_ID="your_shop_id"
+```
+
+### WhatsApp Integration Configuration
+
+```bash
+# Twilio WhatsApp API
+export TWILIO_ACCOUNT_SID="your_account_sid"
+export TWILIO_AUTH_TOKEN="your_auth_token"
+export TWILIO_WHATSAPP_NUMBER="+14155238886"  # Your Twilio WhatsApp number
+
+# Anthropic API for LLM
+export ANTHROPIC_API_KEY="your_anthropic_api_key"
+export WHATSAPP_LLM_MODEL="claude-3-5-sonnet-20241022"  # Optional, defaults to Sonnet
 ```
 
 Alternatively, you can create a `.env` file in the project root and use a package like `python-decouple` or `django-environ` to load these values.
@@ -197,6 +212,111 @@ You can schedule these commands to run periodically using:
 
 - **Django-cron** or **Celery** for more advanced scheduling
 - **Task Scheduler** (Windows)
+
+## WhatsApp Integration
+
+VibeBankERP includes a WhatsApp integration that allows customers to query their receivables and payables using natural language through WhatsApp. The system uses Claude AI to understand queries and provide intelligent responses.
+
+### How It Works
+
+1. **Customer Linking**: Admin links a customer's WhatsApp number to their account(s)
+2. **Verification**: Customer receives a 6-digit code via WhatsApp
+3. **Authentication**: Customer replies with the code to verify their identity
+4. **Natural Language Queries**: Customer can ask questions about their finances in plain language
+
+### Setting Up WhatsApp Integration
+
+#### 1. Set up Twilio WhatsApp
+
+1. Create a [Twilio account](https://www.twilio.com/try-twilio)
+2. Set up WhatsApp Business API or use Twilio's WhatsApp Sandbox
+3. Configure webhook URL: `https://yourdomain.com/whatsapp/webhook/`
+4. Copy your Account SID, Auth Token, and WhatsApp number
+
+#### 2. Get Anthropic API Key
+
+1. Sign up at [Anthropic Console](https://console.anthropic.com/)
+2. Generate an API key
+3. Add to environment variables
+
+#### 3. Link Customer Accounts
+
+Use the management command to link a WhatsApp number to customer accounts:
+
+```bash
+# Link by customer IDs
+python manage.py whatsapp-link "+14155552671" "John Smith" \
+  --email "john@example.com" \
+  --customer-ids "1,2,3"
+
+# Link by external ID
+python manage.py whatsapp-link "+14155552671" "John Smith" \
+  --customer-external-id "CUST123" \
+  --source-system "netvisor"
+
+# Find customers by name
+python manage.py whatsapp-link "+14155552671" "John Smith"
+```
+
+The customer will receive a verification code via WhatsApp. They should reply with the code to complete verification.
+
+#### 4. Admin Interface
+
+Access the Django admin to:
+- View all WhatsApp customers
+- See conversation history and messages
+- Resend verification codes
+- Link/unlink customer accounts
+- View audit logs
+
+Navigate to: `http://localhost:8000/admin/`
+
+### Example Conversations
+
+Once linked, customers can ask questions like:
+
+```
+Customer: "Show me my outstanding invoices"
+Bot: "📊 You have 3 outstanding invoices:
+
+1. Invoice #12345 - $1,250.00
+   Due: Jan 15, 2024
+   Status: Overdue ⚠️
+
+2. Invoice #12346 - $850.00
+   Due: Feb 1, 2024
+   Status: Sent
+
+3. Invoice #12347 - $2,100.00
+   Due: Feb 15, 2024
+   Status: Sent
+
+Total outstanding: $4,200.00"
+
+Customer: "What's the total I owe?"
+Bot: "Your total outstanding payables (bills to pay): $15,450.00"
+
+Customer: "When is invoice 12345 due?"
+Bot: "Invoice #12345 was due on Jan 15, 2024 (overdue by 12 days).
+Amount: $1,250.00"
+```
+
+### WhatsApp Models
+
+The integration includes additional models:
+
+- **WhatsAppCustomer**: Links WhatsApp numbers to customer accounts
+- **WhatsAppSession**: Manages conversation sessions
+- **WhatsAppMessage**: Logs all messages for audit trail
+- **WhatsAppAuditLog**: Tracks all WhatsApp operations
+
+### Security Features
+
+- **Verification codes**: 6-digit codes that expire in 10 minutes
+- **Session management**: 30-minute inactivity timeout
+- **Access control**: Customers can only see their own data
+- **Audit logging**: Complete tracking of all operations
+- **Admin controls**: Activate/deactivate accounts as needed
 
 ## Database Models
 
