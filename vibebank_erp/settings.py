@@ -139,6 +139,12 @@ ETSY_API_KEY = os.environ.get('ETSY_API_KEY', '')
 ETSY_ACCESS_TOKEN = os.environ.get('ETSY_ACCESS_TOKEN', '')
 ETSY_SHOP_ID = os.environ.get('ETSY_SHOP_ID', '')
 
+# eBay API settings
+EBAY_CLIENT_ID = os.environ.get('EBAY_CLIENT_ID', '')
+EBAY_CLIENT_SECRET = os.environ.get('EBAY_CLIENT_SECRET', '')
+EBAY_REFRESH_TOKEN = os.environ.get('EBAY_REFRESH_TOKEN', '')
+EBAY_ENVIRONMENT = os.environ.get('EBAY_ENVIRONMENT', 'production')  # 'production' or 'sandbox'
+
 # WhatsApp Integration settings (Twilio)
 TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID', '')
 TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN', '')

@@ -8,6 +8,7 @@ class ERPSystem(models.TextChoices):
     PROCOUNTOR = 'procountor', 'Procountor'
     SHOPIFY = 'shopify', 'Shopify'
     ETSY = 'etsy', 'Etsy'
+    EBAY = 'ebay', 'eBay'
 
 
 class InvoiceStatus(models.TextChoices):

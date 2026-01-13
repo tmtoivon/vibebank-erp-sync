@@ -1,10 +1,10 @@
 # VibeBankERP Sync
 
-A Django application for synchronizing receivables and payables from multiple accounting systems (Netvisor, Fennoa, and Procountor) and e-commerce platforms (Shopify and Etsy) into a unified database.
+A Django application for synchronizing receivables and payables from multiple accounting systems (Netvisor, Fennoa, and Procountor) and e-commerce platforms (Shopify, Etsy, and eBay) into a unified database.
 
 ## Features
 
-- **Multi-system support**: Sync data from Netvisor, Fennoa, Procountor, Shopify, and Etsy
+- **Multi-system support**: Sync data from Netvisor, Fennoa, Procountor, Shopify, Etsy, and eBay
 - **Unified data model**: Generic database models that work across all accounting systems
 - **Receivables & Payables**: Sync both sales invoices (receivables) and purchase invoices (payables)
 - **Line items**: Full support for invoice line items with tax calculations
@@ -95,6 +95,21 @@ export ETSY_API_KEY="your_api_key"
 export ETSY_ACCESS_TOKEN="your_access_token"
 export ETSY_SHOP_ID="your_shop_id"
 ```
+
+### eBay Configuration
+
+```bash
+export EBAY_CLIENT_ID="your_client_id"
+export EBAY_CLIENT_SECRET="your_client_secret"
+export EBAY_REFRESH_TOKEN="your_refresh_token"
+export EBAY_ENVIRONMENT="production"  # or "sandbox" for testing
+```
+
+**Getting eBay Credentials:**
+1. Create a developer account at [eBay Developers Program](https://developer.ebay.com/)
+2. Create an application to get Client ID and Client Secret
+3. Generate a refresh token using OAuth 2.0 flow
+4. Refresh tokens are long-lived and used to get short-lived access tokens
 
 ### WhatsApp Integration Configuration
 
@@ -196,6 +211,16 @@ python manage.py sync-etsy --paid-only
 python manage.py sync-etsy --shipped-only
 ```
 
+#### Sync from eBay
+
+```bash
+# Sync all orders (default: last 30 days)
+python manage.py sync-ebay
+
+# Sync with custom date range
+python manage.py sync-ebay --start-date 2024-01-01 --end-date 2024-12-31
+```
+
 ### Scheduling Syncs
 
 You can schedule these commands to run periodically using:
@@ -208,6 +233,7 @@ You can schedule these commands to run periodically using:
 0 2 * * * cd /path/to/vibebank-erp-sync && /path/to/venv/bin/python manage.py sync-procountor
 0 2 * * * cd /path/to/vibebank-erp-sync && /path/to/venv/bin/python manage.py sync-shopify
 0 2 * * * cd /path/to/vibebank-erp-sync && /path/to/venv/bin/python manage.py sync-etsy
+0 2 * * * cd /path/to/vibebank-erp-sync && /path/to/venv/bin/python manage.py sync-ebay
 ```
 
 - **Django-cron** or **Celery** for more advanced scheduling
@@ -388,6 +414,15 @@ You can view:
 - Timestamps are Unix epoch seconds
 - Receipts (orders) are synced as receivables
 - Transactions within receipts become line items
+
+### eBay
+- REST API (Sell Fulfillment API) with OAuth 2.0
+- Paginated responses (max 200 items per page)
+- Offset-based pagination
+- Date format: ISO 8601 (YYYY-MM-DDTHH:MM:SS.SSSZ)
+- Uses refresh tokens for long-lived authentication
+- Orders are synced as receivables
+- Supports both production and sandbox environments
 
 ## Development
 
